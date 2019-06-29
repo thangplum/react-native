@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { fetchDishes, fetchComments, fetchPromos, fetchLeaders } from '../redux/ActionCreators';
 import Reservation from './ReservationComponent';
 
+
 const mapStateToProps = state => {
     return {
         dishes: state.dishes,
