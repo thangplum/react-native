@@ -26,8 +26,15 @@ function RenderDish(props) {
 
     handleViewRef = ref => this.view = ref;
 
-    const regconizeDrag = ({moveX, moveY, dx, dy}) => {
+    const regconizeDragLeft = ({moveX, moveY, dx, dy}) => {
         if (dx < -200) 
+            return true;
+        else 
+            return false;
+    }
+
+    const regconizeDragRight = ({moveX, moveY, dx, dy}) => {
+        if (dx > 200) 
             return true;
         else 
             return false;
@@ -42,7 +49,7 @@ function RenderDish(props) {
                 .then(endState => console.log(endState.finished ? 'finished' : 'cancelled'));
         },
         onPanResponderEnd: (e, gestureState) => {
-            if (regconizeDrag(gestureState))
+            if (regconizeDragLeft(gestureState))
                 Alert.alert(
                     'Add to Favorite?',
                     'Are you sure you want to add ' + dish.name + ' to your favorites?',
@@ -59,6 +66,8 @@ function RenderDish(props) {
                     ],
                     {cancelable: false}
                 )
+            else if (regconizeDragRight(gestureState))
+                props.toggleModal()
             return true;
         }
     });
