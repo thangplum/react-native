@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Text, View, StyleSheet, Picker, Switch, Button, Modal, ScrollView, Alert } from 'react-native';
 import DatePicker from 'react-native-datepicker';
 import * as Animatable from "react-native-animatable";
-import {Permissions, Notifications} from 'expo';
+import {Permissions, Notifications, Calendar} from 'expo';
 
 class Reservation extends Component {
 
@@ -43,8 +43,9 @@ class Reservation extends Component {
                 {
                     text: "OK",
                     onPress: () => {
-                        this.presentLocalNotification(this.state.date),
-                        this.resetForm()
+                        this.addReservationToCalender(this.state.date);
+                        this.presentLocalNotification(this.state.date);
+                        this.resetForm();
                     }
                 }
             ],
@@ -72,6 +73,17 @@ class Reservation extends Component {
         return permission;
     }
 
+    async obtainCalenderPermission() {
+        let permission = await Permissions.getAsync(Permissions.CALENDAR)
+        if (permission.status !== 'granted') {
+            permission = await Permissions.askAsync(Permissions.CALENDAR);
+            if (permission.status !== 'granted') {
+                Alert.alert('Permission is not granted to access calendar.')
+            }
+        }
+        return permission;
+    }
+
     async presentLocalNotification(date) {
         await this.obtainNotificationPermission();
         Notifications.presentLocalNotificationAsync({
@@ -86,6 +98,21 @@ class Reservation extends Component {
                 color: '#512DA8'
             }
         })
+    }
+    async addReservationToCalender(date) {
+        await this.obtainCalenderPermission();
+        const startDate = new Date(Date.parse(date));
+        const endDate = new Date(Date.parse(date) + (2 * 60 * 60 * 1000));
+        Calendar.createCalendarAsync(
+            Calendar.DEFAULT,
+            {
+            title: 'Con Fusion Table Reservation',
+            startDate: startDate,
+            endDate: endDate,
+            location: '121, Clear Water Bay Road, Clear Water Bay, Kowloon, Hong Kong',
+            timeZone: 'Asia/Hong_Kong'
+        })
+        Alert.alert('Reservation has been added to your calendar');
     }
 
     render() {
